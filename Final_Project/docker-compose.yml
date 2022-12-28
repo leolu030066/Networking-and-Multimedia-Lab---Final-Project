@@ -7,7 +7,7 @@ services:
       - indy_demo
   verifier-agent:
     build:
-      context: ../../
+      context: ../
       dockerfile: dockerfiles/agents/Dockerfile.ngrok
     environment:
       - NGROK_NAME=ngrok-verifier
@@ -36,7 +36,7 @@ services:
       - indy_demo
   issuer-agent:
     build:
-      context: ../../
+      context: ../
       dockerfile: dockerfiles/agents/Dockerfile.ngrok
     environment:
       - NGROK_NAME=ngrok-issuer
@@ -59,7 +59,7 @@ services:
       - indy_demo
   issuer-notebook:
     build:
-      context: ../../
+      context: ../
       dockerfile: dockerfiles/controllers/Dockerfile.basiccontroller
       args:
         - jupyter_port=${ISSUER_JUPYTER_PORT}
@@ -74,7 +74,7 @@ services:
       - ${ISSUER_WEBHOOK_PORT}:${ISSUER_WEBHOOK_PORT}
   verifier-notebook:
     build:
-      context: ../../
+      context: ../
       dockerfile: dockerfiles/controllers/Dockerfile.basiccontroller
       args:
         - jupyter_port=${VERIFIER_JUPYTER_PORT}
