@@ -62,7 +62,8 @@ EOF
 # -----------------------------------------------------------------------------------------------------------------
 # Default Settings:
 # -----------------------------------------------------------------------------------------------------------------
-DEFAULT_CONTAINERS="ngrok-verifier verifier-agent ngrok-issuer issuer-agent issuer-notebook verifier-notebook"
+# TBD
+DEFAULT_CONTAINERS="ngrok-hospital hospital-agent ngrok-manufacturer manufacturer-agent ngrok-seller seller-agent hospital-notebook manufacturer-notebook seller-notebook"
 
 # -----------------------------------------------------------------------------------------------------------------
 # Functions:
@@ -116,31 +117,45 @@ configureEnvironment() {
   export GENESIS_URL="https://raw.githubusercontent.com/sovrin-foundation/sovrin/stable/sovrin/pool_transactions_builder_genesis"
   export WALLET_TYPE="indy"
 
-  # VERIFIER-agent
-  export VERIFIER_AGENT_NAME="VERIFIER"
-  export VERIFIER_ADMIN_PORT=8051
-  export VERIFIER_HTTP_PORT=8050
-  export VERIFIER_WEBHOOK_PORT=8052
-  export VERIFIER_WEBHOOK_URL=${VERIFIER_WEBHOOK_URL:-http://$DOCKERHOST:$VERIFIER_WEBHOOK_PORT}
-  export VERIFIER_AGENT_ENDPOINT=${VERIFIER_AGENT_ENDPOINT:-http://$DOCKERHOST:$VERIFIER_HTTP_PORT}
-  export VERIFIER_WALLET_SEED="VAGENT_seed_00000000000000000000"
-  export VERIFIER_WALLET_KEY="VERIFIER_key_00000000000000000000000"
-  export VERIFIER_WALLET_NAME="VERIFIER Wallet"
-  export VERIFIER_JUPYTER_PORT="8889"
-  export VERIFIER_ADMIN_SECURE="true"
+  # TBD
+  # hospital-agent
+  export HOSPITAL_AGENT_NAME="HOSPITAL"
+  export HOSPITAL_ADMIN_PORT=8071
+  export HOSPITAL_HTTP_PORT=8070
+  export HOSPITAL_WEBHOOK_PORT=8072
+  export HOSPITAL_WEBHOOK_URL=${HOSPITAL_WEBHOOK_URL:-http://$DOCKERHOST:$HOSPITAL_WEBHOOK_PORT}
+  export HOSPITAL_AGENT_ENDPOINT=${HOSPITAL_AGENT_ENDPOINT:-http://$DOCKERHOST:$HOSPITAL_HTTP_PORT}
+  export HOSPITAL_WALLET_SEED="HAGENT_seed_00000000000000000000"
+  export HOSPITAL_WALLET_KEY="HOSPITAL_key_00000000000000000000000"
+  export HOSPITAL_WALLET_NAME="HOSPITAL Wallet"
+  export HOSPITAL_JUPYTER_PORT="8889"
+  export HOSPITAL_ADMIN_SECURE="true"
 
-  # ISSUER-agent
-  export ISSUER_AGENT_NAME="ISSUER"
-  export ISSUER_ADMIN_PORT=8021
-  export ISSUER_HTTP_PORT=8020
-  export ISSUER_WEBHOOK_PORT=8022
-  export ISSUER_WEBHOOK_URL=${ISSUER_WEBHOOK_URL:-http://$DOCKERHOST:$ISSUER_WEBHOOK_PORT}
-  export ISSUER_AGENT_ENDPOINT=${ISSUER_AGENT_ENDPOINT:-http://$DOCKERHOST:$ISSUER_HTTP_PORT}
-  export ISSUER_WALLET_SEED="IAGENT_seed_00000000000000000000"
-  export ISSUER_WALLET_KEY="ISSUER_key_00000000000000000000000"
-  export ISSUER_WALLET_NAME="ISSUER Wallet"
-  export ISSUER_JUPYTER_PORT="8888"
-  export ISSUER_ADMIN_SECURE="true"
+  # manufacturer-agent
+  export MANUFACTURER_AGENT_NAME="MANUFACTURER"
+  export MANUFACTURER_ADMIN_PORT=8051
+  export MANUFACTURER_HTTP_PORT=8050
+  export MANUFACTURER_WEBHOOK_PORT=8052
+  export MANUFACTURER_WEBHOOK_URL=${MANUFACTURER_WEBHOOK_URL:-http://$DOCKERHOST:$MANUFACTURER_WEBHOOK_PORT}
+  export MANUFACTURER_AGENT_ENDPOINT=${MANUFACTURER_AGENT_ENDPOINT:-http://$DOCKERHOST:$MANUFACTURER_HTTP_PORT}
+  export MANUFACTURER_WALLET_SEED="MAGENT_seed_00000000000000000000"
+  export MANUFACTURER_WALLET_KEY="MANUFACTURER_key_00000000000000000000000"
+  export MANUFACTURER_WALLET_NAME="MANUFACTURER Wallet"
+  export MANUFACTURER_JUPYTER_PORT="8888"
+  export MANUFACTURER_ADMIN_SECURE="true"
+
+  # seller-agent
+  export SELLER_AGENT_NAME="SELLER"
+  export SELLER_ADMIN_PORT=8021
+  export SELLER_HTTP_PORT=8020
+  export SELLER_WEBHOOK_PORT=8022
+  export SELLER_WEBHOOK_URL=${ISSUER_WEBHOOK_URL:-http://$DOCKERHOST:$SELLER_WEBHOOK_PORT}
+  export SELLER_AGENT_ENDPOINT=${SELLER_AGENT_ENDPOINT:-http://$DOCKERHOST:$SELLER_HTTP_PORT}
+  export SELLER_WALLET_SEED="SAGENT_seed_00000000000000000000"
+  export SELLER_WALLET_KEY="SELLER_key_00000000000000000000000"
+  export SELLER_WALLET_NAME="SELLER Wallet"
+  export SELLER_JUPYTER_PORT="8890"
+  export SELLER_ADMIN_SECURE="true"
 
 
 }

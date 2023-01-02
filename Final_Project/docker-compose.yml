@@ -1,92 +1,135 @@
 version: "3"
 services:
-  ngrok-verifier:
+  ngrok-hospital:
     image: wernight/ngrok
-    command: ngrok http verifier-agent:${VERIFIER_HTTP_PORT} --log stdout
+    command: ngrok http hospital-agent:${HOSPITAL_HTTP_PORT} --log stdout
     networks:
-      - indy_demo
-  verifier-agent:
+      - medical_device_blockchain
+  hospital-agent:
     build:
       context: ../
       dockerfile: dockerfiles/agents/Dockerfile.ngrok
     environment:
-      - NGROK_NAME=ngrok-verifier
-      - ADMIN_URL=http://verifier-agent:${VERIFIER_ADMIN_PORT}
-      - AGENT_NAME=${VERIFIER_AGENT_NAME}
-      - ADMIN_PORT=${VERIFIER_ADMIN_PORT}
-      - HTTP_PORT=${VERIFIER_HTTP_PORT}
-      - ACAPY_WEBHOOK_URL=${VERIFIER_WEBHOOK_URL}
-      - AGENT_ENDPOINT=${VERIFIER_AGENT_ENDPOINT}
-      - WALLET_SEED=${VERIFIER_WALLET_SEED}
-      - WALLET_NAME=${VERIFIER_WALLET_NAME}
-      - WALLET_KEY=${VERIFIER_WALLET_KEY}
+      - NGROK_NAME=ngrok-hospital
+      - ADMIN_URL=http://hospital-agent:${HOSPITAL_ADMIN_PORT}
+      - AGENT_NAME=${HOSPITAL_AGENT_NAME}
+      - ADMIN_PORT=${HOSPITAL_ADMIN_PORT}
+      - HTTP_PORT=${HOSPITAL_HTTP_PORT}
+      - ACAPY_WEBHOOK_URL=${HOSPITAL_WEBHOOK_URL}
+      - AGENT_ENDPOINT=${HOSPITAL_AGENT_ENDPOINT}
+      - WALLET_SEED=${HOSPITAL_WALLET_SEED}
+      - WALLET_NAME=${HOSPITAL_WALLET_NAME}
+      - WALLET_KEY=${HOSPITAL_WALLET_KEY}
       - WALLET_TYPE=${WALLET_TYPE}
-      - ACAPY_ADMIN_INSECURE_MODE=${VERIFIER_ADMIN_SECURE}
+      - ACAPY_ADMIN_INSECURE_MODE=${HOSPITAL_ADMIN_SECURE}
       - GENESIS_URL=${GENESIS_URL}
     ports:
-      - ${VERIFIER_HTTP_PORT}:${VERIFIER_HTTP_PORT}
-      - ${VERIFIER_ADMIN_PORT}:${VERIFIER_ADMIN_PORT}
+      - ${HOSPITAL_HTTP_PORT}:${HOSPITAL_HTTP_PORT}
+      - ${HOSPITAL_ADMIN_PORT}:${HOSPITAL_ADMIN_PORT}
     networks:
-      - indy_demo
+      - medical_device_blockchain
 
-  ngrok-issuer:
+  ngrok-manufacturer:
     image: wernight/ngrok
-    command: ngrok http issuer-agent:${ISSUER_HTTP_PORT} --log stdout
+    command: ngrok http manufacturer-agent:${MANUFACTURER_HTTP_PORT} --log stdout
     networks:
-      - indy_demo
-  issuer-agent:
+      - medical_device_blockchain
+  manufacturer-agent:
     build:
       context: ../
       dockerfile: dockerfiles/agents/Dockerfile.ngrok
     environment:
-      - NGROK_NAME=ngrok-issuer
-      - ADMIN_URL=http://issuer-agent:${ISSUER_ADMIN_PORT}
-      - AGENT_NAME=${ISSUER_AGENT_NAME}
-      - ADMIN_PORT=${ISSUER_ADMIN_PORT}
-      - HTTP_PORT=${ISSUER_HTTP_PORT}
-      - ACAPY_WEBHOOK_URL=${ISSUER_WEBHOOK_URL}
-      - AGENT_ENDPOINT=${ISSUER_AGENT_ENDPOINT}
-      - WALLET_SEED=${ISSUER_WALLET_SEED}
-      - WALLET_NAME=${ISSUER_WALLET_NAME}
-      - WALLET_KEY=${ISSUER_WALLET_KEY}
+      - NGROK_NAME=ngrok-manufacturer
+      - ADMIN_URL=http://manufacturer-agent:${MANUFACTURER_ADMIN_PORT}
+      - AGENT_NAME=${MANUFACTURER_AGENT_NAME}
+      - ADMIN_PORT=${MANUFACTURER_ADMIN_PORT}
+      - HTTP_PORT=${MANUFACTURER_HTTP_PORT}
+      - ACAPY_WEBHOOK_URL=${MANUFACTURER_WEBHOOK_URL}
+      - AGENT_ENDPOINT=${MANUFACTURER_AGENT_ENDPOINT}
+      - WALLET_SEED=${MANUFACTURER_WALLET_SEED}
+      - WALLET_NAME=${MANUFACTURER_WALLET_NAME}
+      - WALLET_KEY=${MANUFACTURER_WALLET_KEY}
       - WALLET_TYPE=${WALLET_TYPE}
-      - ACAPY_ADMIN_INSECURE_MODE=${ISSUER_ADMIN_SECURE}
+      - ACAPY_ADMIN_INSECURE_MODE=${MANUFACTURER_ADMIN_SECURE}
       - GENESIS_URL=${GENESIS_URL}
     ports:
-      - ${ISSUER_HTTP_PORT}:${ISSUER_HTTP_PORT}
-      - ${ISSUER_ADMIN_PORT}:${ISSUER_ADMIN_PORT}
+      - ${MANUFACTURER_HTTP_PORT}:${MANUFACTURER_HTTP_PORT}
+      - ${MANUFACTURER_ADMIN_PORT}:${MANUFACTURER_ADMIN_PORT}
     networks:
-      - indy_demo
-  issuer-notebook:
+      - medical_device_blockchain
+  ngrok-seller:
+    image: wernight/ngrok
+    command: ngrok http seller-agent:${SELLER_HTTP_PORT} --log stdout
+    networks:
+      - medical_device_blockchain
+  seller-agent:
     build:
       context: ../
-      dockerfile: dockerfiles/controllers/Dockerfile.basiccontroller
-      args:
-        - jupyter_port=${ISSUER_JUPYTER_PORT}
-    depends_on:
-      - issuer-agent
-    networks:
-      - indy_demo
-    volumes:
-      - ./notebooks/issuer:/workspace
+      dockerfile: dockerfiles/agents/Dockerfile.ngrok
+    environment:
+      - NGROK_NAME=ngrok-seller
+      - ADMIN_URL=http://seller-agent:${SELLER_ADMIN_PORT}
+      - AGENT_NAME=${SELLER_AGENT_NAME}
+      - ADMIN_PORT=${SELLER_ADMIN_PORT}
+      - HTTP_PORT=${SELLER_HTTP_PORT}
+      - ACAPY_WEBHOOK_URL=${SELLER_WEBHOOK_URL}
+      - AGENT_ENDPOINT=${SELLER_AGENT_ENDPOINT}
+      - WALLET_SEED=${SELLER_WALLET_SEED}
+      - WALLET_NAME=${SELLER_WALLET_NAME}
+      - WALLET_KEY=${SELLER_WALLET_KEY}
+      - WALLET_TYPE=${WALLET_TYPE}
+      - ACAPY_ADMIN_INSECURE_MODE=${SELLER_ADMIN_SECURE}
+      - GENESIS_URL=${GENESIS_URL}
     ports:
-      - "8888:8888"
-      - ${ISSUER_WEBHOOK_PORT}:${ISSUER_WEBHOOK_PORT}
-  verifier-notebook:
+      - ${SELLER_HTTP_PORT}:${SELLER_HTTP_PORT}
+      - ${SELLER_ADMIN_PORT}:${SELLER_ADMIN_PORT}
+    networks:
+      - medical_device_blockchain
+  hospital-notebook:
     build:
       context: ../
       dockerfile: dockerfiles/controllers/Dockerfile.basiccontroller
       args:
-        - jupyter_port=${VERIFIER_JUPYTER_PORT}
+        - jupyter_port=${HOSPITAL_JUPYTER_PORT}
     depends_on:
-      - verifier-agent
+      - hospital-agent
     networks:
-      - indy_demo
+      - medical_device_blockchain
     volumes:
-      - ${PWD}/notebooks/verifier:/workspace
+      - ./notebooks/hospital:/workspace
     ports:
       - "8889:8888"
-      - ${VERIFIER_WEBHOOK_PORT}:${VERIFIER_WEBHOOK_PORT}
+      - ${HOSPITAL_WEBHOOK_PORT}:${HOSPITAL_WEBHOOK_PORT}
+  manufacturer-notebook:
+    build:
+      context: ../
+      dockerfile: dockerfiles/controllers/Dockerfile.basiccontroller
+      args:
+        - jupyter_port=${MANUFACTURER_JUPYTER_PORT}
+    depends_on:
+      - manufacturer-agent
+    networks:
+      - medical_device_blockchain
+    volumes:
+      - ${PWD}/notebooks/manufacturer:/workspace
+    ports:
+      - "8888:8888"
+      - ${MANUFACTURER_WEBHOOK_PORT}:${MANUFACTURER_WEBHOOK_PORT}
+  seller-notebook:
+    build:
+      context: ../
+      dockerfile: dockerfiles/controllers/Dockerfile.basiccontroller
+      args:
+        - jupyter_port=${SELLER_JUPYTER_PORT}
+    depends_on:
+      - seller-agent
+    networks:
+      - medical_device_blockchain
+    volumes:
+      - ${PWD}/notebooks/seller:/workspace
+    ports:
+      - "8890:8888"
+      - ${SELLER_WEBHOOK_PORT}:${SELLER_WEBHOOK_PORT}
 
 networks:
-  indy_demo:
+  medical_device_blockchain:
