@@ -85,6 +85,34 @@ services:
       - ${SELLER_ADMIN_PORT}:${SELLER_ADMIN_PORT}
     networks:
       - medical_device_blockchain
+  ngrok-medical_device_computer:
+    image: wernight/ngrok
+    command: ngrok http medical_device_computer-agent:${MEDICAL_DEVICE_COMPUTER_HTTP_PORT} --log stdout
+    networks:
+      - medical_device_blockchain
+  medical_device_computer-agent:
+    build:
+      context: ../
+      dockerfile: dockerfiles/agents/Dockerfile.ngrok
+    environment:
+      - NGROK_NAME=ngrok-medical_device_computer
+      - ADMIN_URL=http://medical_device_computer-agent:${MEDICAL_DEVICE_COMPUTER_ADMIN_PORT}
+      - AGENT_NAME=${MEDICAL_DEVICE_COMPUTER_AGENT_NAME}
+      - ADMIN_PORT=${MEDICAL_DEVICE_COMPUTER_ADMIN_PORT}
+      - HTTP_PORT=${MEDICAL_DEVICE_COMPUTER_HTTP_PORT}
+      - ACAPY_WEBHOOK_URL=${MEDICAL_DEVICE_COMPUTER_WEBHOOK_URL}
+      - AGENT_ENDPOINT=${MEDICAL_DEVICE_COMPUTER_AGENT_ENDPOINT}
+      - WALLET_SEED=${MEDICAL_DEVICE_COMPUTER_WALLET_SEED}
+      - WALLET_NAME=${MEDICAL_DEVICE_COMPUTER_WALLET_NAME}
+      - WALLET_KEY=${MEDICAL_DEVICE_COMPUTER_WALLET_KEY}
+      - WALLET_TYPE=${WALLET_TYPE}
+      - ACAPY_ADMIN_INSECURE_MODE=${MEDICAL_DEVICE_COMPUTER_ADMIN_SECURE}
+      - GENESIS_URL=${GENESIS_URL}
+    ports:
+      - ${MEDICAL_DEVICE_COMPUTER_HTTP_PORT}:${MEDICAL_DEVICE_COMPUTER_HTTP_PORT}
+      - ${MEDICAL_DEVICE_COMPUTER_ADMIN_PORT}:${MEDICAL_DEVICE_COMPUTER_ADMIN_PORT}
+    networks:
+      - medical_device_blockchain
   hospital-notebook:
     build:
       context: ../
@@ -130,6 +158,21 @@ services:
     ports:
       - "8890:8888"
       - ${SELLER_WEBHOOK_PORT}:${SELLER_WEBHOOK_PORT}
+  medical_device_computer-notebook:
+    build:
+      context: ../
+      dockerfile: dockerfiles/controllers/Dockerfile.basiccontroller
+      args:
+        - jupyter_port=${MEDICAL_DEVICE_COMPUTER_JUPYTER_PORT}
+    depends_on:
+      - medical_device_computer-agent
+    networks:
+      - medical_device_blockchain
+    volumes:
+      - ${PWD}/notebooks/medical_device_computer:/workspace
+    ports:
+      - "8891:8888"
+      - ${MEDICAL_DEVICE_COMPUTER_WEBHOOK_PORT}:${MEDICAL_DEVICE_COMPUTER_WEBHOOK_PORT}
 
 networks:
   medical_device_blockchain:

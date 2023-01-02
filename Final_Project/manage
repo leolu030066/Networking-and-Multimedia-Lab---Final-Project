@@ -63,7 +63,7 @@ EOF
 # Default Settings:
 # -----------------------------------------------------------------------------------------------------------------
 # TBD
-DEFAULT_CONTAINERS="ngrok-hospital hospital-agent ngrok-manufacturer manufacturer-agent ngrok-seller seller-agent hospital-notebook manufacturer-notebook seller-notebook"
+DEFAULT_CONTAINERS="ngrok-hospital hospital-agent ngrok-manufacturer manufacturer-agent ngrok-seller seller-agent ngrok-medical_device_computer medical_device_computer-agent hospital-notebook manufacturer-notebook seller-notebook medical_device_computer-notebook"
 
 # -----------------------------------------------------------------------------------------------------------------
 # Functions:
@@ -156,6 +156,19 @@ configureEnvironment() {
   export SELLER_WALLET_NAME="SELLER Wallet"
   export SELLER_JUPYTER_PORT="8890"
   export SELLER_ADMIN_SECURE="true"
+
+  # medical_device_computer-agent
+  export MEDICAL_DEVICE_COMPUTER_AGENT_NAME="MEDICAL_DEVICE_COMPUTER"
+  export MEDICAL_DEVICE_COMPUTER_ADMIN_PORT=7991
+  export MEDICAL_DEVICE_COMPUTER_HTTP_PORT=7990
+  export MEDICAL_DEVICE_COMPUTER_WEBHOOK_PORT=7992
+  export MEDICAL_DEVICE_COMPUTER_WEBHOOK_URL=${MEDICAL_DEVICE_COMPUTER_WEBHOOK_URL:-http://$DOCKERHOST:$MEDICAL_DEVICE_COMPUTER_WEBHOOK_PORT}
+  export MEDICAL_DEVICE_COMPUTER_AGENT_ENDPOINT=${MEDICAL_DEVICE_COMPUTER_AGENT_ENDPOINT:-http://$DOCKERHOST:$MEDICAL_DEVICE_COMPUTER_HTTP_PORT}
+  export MEDICAL_DEVICE_COMPUTER_WALLET_SEED="DAGENT_seed_00000000000000000000"
+  export MEDICAL_DEVICE_COMPUTER_WALLET_KEY="MEDICAL_DEVICE_COMPUTER_key_00000000000000000000000"
+  export MEDICAL_DEVICE_COMPUTER_WALLET_NAME="MEDICAL_DEVICE_COMPUTER Wallet"
+  export MEDICAL_DEVICE_COMPUTER_JUPYTER_PORT="8891"
+  export MEDICAL_DEVICE_COMPUTER_ADMIN_SECURE="true"
 
 
 }
