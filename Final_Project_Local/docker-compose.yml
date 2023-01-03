@@ -1,0 +1,178 @@
+version: "3"
+services:
+  ngrok-hospital:
+    image: wernight/ngrok
+    command: ngrok http hospital-agent:${HOSPITAL_HTTP_PORT} --log stdout
+    networks:
+      - medical_device_blockchain
+  hospital-agent:
+    build:
+      context: ../
+      dockerfile: dockerfiles/agents/Dockerfile.ngrok
+    environment:
+      - NGROK_NAME=ngrok-hospital
+      - ADMIN_URL=http://hospital-agent:${HOSPITAL_ADMIN_PORT}
+      - AGENT_NAME=${HOSPITAL_AGENT_NAME}
+      - ADMIN_PORT=${HOSPITAL_ADMIN_PORT}
+      - HTTP_PORT=${HOSPITAL_HTTP_PORT}
+      - ACAPY_WEBHOOK_URL=${HOSPITAL_WEBHOOK_URL}
+      - AGENT_ENDPOINT=${HOSPITAL_AGENT_ENDPOINT}
+      - WALLET_SEED=${HOSPITAL_WALLET_SEED}
+      - WALLET_NAME=${HOSPITAL_WALLET_NAME}
+      - WALLET_KEY=${HOSPITAL_WALLET_KEY}
+      - WALLET_TYPE=${WALLET_TYPE}
+      - ACAPY_ADMIN_INSECURE_MODE=${HOSPITAL_ADMIN_SECURE}
+      - GENESIS_URL=${GENESIS_URL}
+    ports:
+      - ${HOSPITAL_HTTP_PORT}:${HOSPITAL_HTTP_PORT}
+      - ${HOSPITAL_ADMIN_PORT}:${HOSPITAL_ADMIN_PORT}
+    networks:
+      - medical_device_blockchain
+
+  ngrok-manufacturer:
+    image: wernight/ngrok
+    command: ngrok http manufacturer-agent:${MANUFACTURER_HTTP_PORT} --log stdout
+    networks:
+      - medical_device_blockchain
+  manufacturer-agent:
+    build:
+      context: ../
+      dockerfile: dockerfiles/agents/Dockerfile.ngrok
+    environment:
+      - NGROK_NAME=ngrok-manufacturer
+      - ADMIN_URL=http://manufacturer-agent:${MANUFACTURER_ADMIN_PORT}
+      - AGENT_NAME=${MANUFACTURER_AGENT_NAME}
+      - ADMIN_PORT=${MANUFACTURER_ADMIN_PORT}
+      - HTTP_PORT=${MANUFACTURER_HTTP_PORT}
+      - ACAPY_WEBHOOK_URL=${MANUFACTURER_WEBHOOK_URL}
+      - AGENT_ENDPOINT=${MANUFACTURER_AGENT_ENDPOINT}
+      - WALLET_SEED=${MANUFACTURER_WALLET_SEED}
+      - WALLET_NAME=${MANUFACTURER_WALLET_NAME}
+      - WALLET_KEY=${MANUFACTURER_WALLET_KEY}
+      - WALLET_TYPE=${WALLET_TYPE}
+      - ACAPY_ADMIN_INSECURE_MODE=${MANUFACTURER_ADMIN_SECURE}
+      - GENESIS_URL=${GENESIS_URL}
+    ports:
+      - ${MANUFACTURER_HTTP_PORT}:${MANUFACTURER_HTTP_PORT}
+      - ${MANUFACTURER_ADMIN_PORT}:${MANUFACTURER_ADMIN_PORT}
+    networks:
+      - medical_device_blockchain
+  ngrok-seller:
+    image: wernight/ngrok
+    command: ngrok http seller-agent:${SELLER_HTTP_PORT} --log stdout
+    networks:
+      - medical_device_blockchain
+  seller-agent:
+    build:
+      context: ../
+      dockerfile: dockerfiles/agents/Dockerfile.ngrok
+    environment:
+      - NGROK_NAME=ngrok-seller
+      - ADMIN_URL=http://seller-agent:${SELLER_ADMIN_PORT}
+      - AGENT_NAME=${SELLER_AGENT_NAME}
+      - ADMIN_PORT=${SELLER_ADMIN_PORT}
+      - HTTP_PORT=${SELLER_HTTP_PORT}
+      - ACAPY_WEBHOOK_URL=${SELLER_WEBHOOK_URL}
+      - AGENT_ENDPOINT=${SELLER_AGENT_ENDPOINT}
+      - WALLET_SEED=${SELLER_WALLET_SEED}
+      - WALLET_NAME=${SELLER_WALLET_NAME}
+      - WALLET_KEY=${SELLER_WALLET_KEY}
+      - WALLET_TYPE=${WALLET_TYPE}
+      - ACAPY_ADMIN_INSECURE_MODE=${SELLER_ADMIN_SECURE}
+      - GENESIS_URL=${GENESIS_URL}
+    ports:
+      - ${SELLER_HTTP_PORT}:${SELLER_HTTP_PORT}
+      - ${SELLER_ADMIN_PORT}:${SELLER_ADMIN_PORT}
+    networks:
+      - medical_device_blockchain
+  ngrok-medical_device_computer:
+    image: wernight/ngrok
+    command: ngrok http medical_device_computer-agent:${MEDICAL_DEVICE_COMPUTER_HTTP_PORT} --log stdout
+    networks:
+      - medical_device_blockchain
+  medical_device_computer-agent:
+    build:
+      context: ../
+      dockerfile: dockerfiles/agents/Dockerfile.ngrok
+    environment:
+      - NGROK_NAME=ngrok-medical_device_computer
+      - ADMIN_URL=http://medical_device_computer-agent:${MEDICAL_DEVICE_COMPUTER_ADMIN_PORT}
+      - AGENT_NAME=${MEDICAL_DEVICE_COMPUTER_AGENT_NAME}
+      - ADMIN_PORT=${MEDICAL_DEVICE_COMPUTER_ADMIN_PORT}
+      - HTTP_PORT=${MEDICAL_DEVICE_COMPUTER_HTTP_PORT}
+      - ACAPY_WEBHOOK_URL=${MEDICAL_DEVICE_COMPUTER_WEBHOOK_URL}
+      - AGENT_ENDPOINT=${MEDICAL_DEVICE_COMPUTER_AGENT_ENDPOINT}
+      - WALLET_SEED=${MEDICAL_DEVICE_COMPUTER_WALLET_SEED}
+      - WALLET_NAME=${MEDICAL_DEVICE_COMPUTER_WALLET_NAME}
+      - WALLET_KEY=${MEDICAL_DEVICE_COMPUTER_WALLET_KEY}
+      - WALLET_TYPE=${WALLET_TYPE}
+      - ACAPY_ADMIN_INSECURE_MODE=${MEDICAL_DEVICE_COMPUTER_ADMIN_SECURE}
+      - GENESIS_URL=${GENESIS_URL}
+    ports:
+      - ${MEDICAL_DEVICE_COMPUTER_HTTP_PORT}:${MEDICAL_DEVICE_COMPUTER_HTTP_PORT}
+      - ${MEDICAL_DEVICE_COMPUTER_ADMIN_PORT}:${MEDICAL_DEVICE_COMPUTER_ADMIN_PORT}
+    networks:
+      - medical_device_blockchain
+  hospital-notebook:
+    build:
+      context: ../
+      dockerfile: dockerfiles/controllers/Dockerfile.basiccontroller
+      args:
+        - jupyter_port=${HOSPITAL_JUPYTER_PORT}
+    depends_on:
+      - hospital-agent
+    networks:
+      - medical_device_blockchain
+    volumes:
+      - ./notebooks/hospital:/workspace
+    ports:
+      - "8889:8888"
+      - ${HOSPITAL_WEBHOOK_PORT}:${HOSPITAL_WEBHOOK_PORT}
+  manufacturer-notebook:
+    build:
+      context: ../
+      dockerfile: dockerfiles/controllers/Dockerfile.basiccontroller
+      args:
+        - jupyter_port=${MANUFACTURER_JUPYTER_PORT}
+    depends_on:
+      - manufacturer-agent
+    networks:
+      - medical_device_blockchain
+    volumes:
+      - ${PWD}/notebooks/manufacturer:/workspace
+    ports:
+      - "8888:8888"
+      - ${MANUFACTURER_WEBHOOK_PORT}:${MANUFACTURER_WEBHOOK_PORT}
+  seller-notebook:
+    build:
+      context: ../
+      dockerfile: dockerfiles/controllers/Dockerfile.basiccontroller
+      args:
+        - jupyter_port=${SELLER_JUPYTER_PORT}
+    depends_on:
+      - seller-agent
+    networks:
+      - medical_device_blockchain
+    volumes:
+      - ${PWD}/notebooks/seller:/workspace
+    ports:
+      - "8890:8888"
+      - ${SELLER_WEBHOOK_PORT}:${SELLER_WEBHOOK_PORT}
+  medical_device_computer-notebook:
+    build:
+      context: ../
+      dockerfile: dockerfiles/controllers/Dockerfile.basiccontroller
+      args:
+        - jupyter_port=${MEDICAL_DEVICE_COMPUTER_JUPYTER_PORT}
+    depends_on:
+      - medical_device_computer-agent
+    networks:
+      - medical_device_blockchain
+    volumes:
+      - ${PWD}/notebooks/medical_device_computer:/workspace
+    ports:
+      - "8891:8888"
+      - ${MEDICAL_DEVICE_COMPUTER_WEBHOOK_PORT}:${MEDICAL_DEVICE_COMPUTER_WEBHOOK_PORT}
+
+networks:
+  medical_device_blockchain:
