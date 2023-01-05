@@ -55,7 +55,7 @@ Run two notebook in th eorder of MarkDown.
 ### 3. Doctor Send Command to device to do some operations
 
 #### notebook hospital/2-Hospital_Issue_Operation_Command, the_wallet/2-Device_Accept_Operation_Command
-
 Run two notebook in the order of MarkDown.
 
-#### notebook
+#### notebook the_wallet/3-Device_wallet medical_device_computer/3-Medical_Device_Computer
+Run two notebook in the order of MarkDown
