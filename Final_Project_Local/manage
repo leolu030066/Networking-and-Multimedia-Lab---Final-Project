@@ -63,7 +63,7 @@ EOF
 # Default Settings:
 # -----------------------------------------------------------------------------------------------------------------
 # TBD
-DEFAULT_CONTAINERS="tails-server hospital-agent manufacturer-agent seller-agent medical_device_computer-agent hospital-notebook manufacturer-notebook seller-notebook medical_device_computer-notebook setup ledger-nodes ledger-browser"
+DEFAULT_CONTAINERS="tails-server hospital-agent manufacturer-agent seller-agent medical_device_computer-agent the_wallet-agent hospital-notebook manufacturer-notebook seller-notebook medical_device_computer-notebook the_wallet-notebook setup ledger-nodes ledger-browser"
 
 # -----------------------------------------------------------------------------------------------------------------
 # Functions:
@@ -172,7 +172,18 @@ configureEnvironment() {
   export MEDICAL_DEVICE_COMPUTER_JUPYTER_PORT="8891"
   export MEDICAL_DEVICE_COMPUTER_ADMIN_SECURE="true"
 
-
+  # wallet-agent
+  export THE_WALLET_AGENT_NAME="THE_WALLET"
+  export THE_WALLET_ADMIN_PORT=7981
+  export THE_WALLET_HTTP_PORT=7980
+  export THE_WALLET_WEBHOOK_PORT=7982
+  export THE_WALLET_WEBHOOK_URL=${THE_WALLET_WEBHOOK_URL:-http://$DOCKERHOST:$THE_WALLET_WEBHOOK_PORT}
+  export THE_WALLET_AGENT_ENDPOINT=${THE_WALLET_AGENT_ENDPOINT:-http://$DOCKERHOST:$THE_WALLET_HTTP_PORT}
+  export THE_WALLET_WALLET_SEED="WAGENT_seed_00000000000000000000"
+  export THE_WALLET_WALLET_KEY="THE_WALLET_key_00000000000000000000000"
+  export THE_WALLET_WALLET_NAME="THE WALLET"
+  export THE_WALLET_JUPYTER_PORT="8892"
+  export THE_WALLET_ADMIN_SECURE="true"
 }
 
 getInputParams() {

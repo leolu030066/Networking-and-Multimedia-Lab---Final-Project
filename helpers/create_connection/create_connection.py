@@ -7,16 +7,25 @@ from aries_basic_controller.aries_controller import AriesAgentController
 from dotenv import load_dotenv
 load_dotenv()
 
-ALICE_ADMIN_URL = os.getenv('ALICE_ADMIN_URL')
-ALICE_WEBHOOK_PORT = os.getenv('ALICE_WEBHOOK_PORT')
-ALICE_WEBHOOK_HOST = os.getenv('ALICE_WEBHOOK_HOST')
-ALICE_WEBHOOK_BASE = os.getenv('ALICE_WEBHOOK_BASE')
-ALICE_API_KEY = os.getenv('ALICE_API_KEY')
+MANUFACTURER_ADMIN_URL = os.getenv('MANUFACTURER_ADMIN_URL')
+MANUFACTURER_WEBHOOK_PORT = os.getenv('MANUFACTURER_WEBHOOK_PORT')
+MANUFACTURER_WEBHOOK_HOST = os.getenv('MANUFACTURER_WEBHOOK_HOST')
+MANUFACTURER_WEBHOOK_BASE = os.getenv('MANUFACTURER_WEBHOOK_BASE')
 
-BOB_ADMIN_URL = os.getenv('BOB_ADMIN_URL')
-BOB_WEBHOOK_PORT = os.getenv('BOB_WEBHOOK_PORT')
-BOB_WEBHOOK_HOST = os.getenv('BOB_WEBHOOK_HOST')
-BOB_WEBHOOK_BASE = os.getenv('BOB_WEBHOOK_BASE')
+SELLER_ADMIN_URL = os.getenv('SELLER_ADMIN_URL')
+SELLER_WEBHOOK_PORT = os.getenv('SELLER_WEBHOOK_PORT')
+SELLER_WEBHOOK_HOST = os.getenv('SELLER_WEBHOOK_HOST')
+SELLER_WEBHOOK_BASE = os.getenv('SELLER_WEBHOOK_BASE')
+
+HOSPITAL_ADMIN_URL = os.getenv('HOSPITAL_ADMIN_URL')
+HOSPITAL_WEBHOOK_PORT = os.getenv('HOSPITAL_WEBHOOK_PORT')
+HOSPITAL_WEBHOOK_HOST = os.getenv('HOSPITAL_WEBHOOK_HOST')
+HOSPITAL_WEBHOOK_BASE = os.getenv('HOSPITAL_WEBHOOK_BASE')
+
+THE_WALLET_ADMIN_URL = os.getenv('THE_WALLET_ADMIN_URL')
+THE_WALLET_WEBHOOK_PORT = os.getenv('THE_WALLET_WEBHOOK_PORT')
+THE_WALLET_WEBHOOK_HOST = os.getenv('THE_WALLET_WEBHOOK_HOST')
+THE_WALLET_WEBHOOK_BASE = os.getenv('THE_WALLET_WEBHOOK_BASE')
 
 
 async def start_agent():
@@ -24,88 +33,170 @@ async def start_agent():
     time.sleep(10)
 
     # Inviter
-    bob_agent_controller = AriesAgentController(admin_url=BOB_ADMIN_URL)
+    seller_agent_controller = AriesAgentController(admin_url=SELLER_ADMIN_URL)
 
     # Invitee
-    alice_agent_controller = AriesAgentController(
-                                                admin_url=ALICE_ADMIN_URL,
-                                                api_key=ALICE_API_KEY)
+    manufacturer_agent_controller = AriesAgentController(admin_url=MANUFACTURER_ADMIN_URL)
 
-    # alice_agent_controller.init_webhook_server(
-    #                                         webhook_host=ALICE_WEBHOOK_HOST,
-    #                                         webhook_port=ALICE_WEBHOOK_PORT,
-    #                                         webhook_base=ALICE_WEBHOOK_BASE)
+    # manufacturer_agent_controller.init_webhook_server(
+    #                                         webhook_host=MANUFACTURER_WEBHOOK_HOST,
+    #                                         webhook_port=MANUFACTURER_WEBHOOK_PORT,
+    #                                         webhook_base=MANUFACTURER_WEBHOOK_BASE)
 
-    # await alice_agent_controller.listen_webhooks()
+    # await manufacturer_agent_controller.listen_webhooks()
     #
-    # await bob_agent_controller.listen_webhooks()
+    # await seller_agent_controller.listen_webhooks()
     #
     #
-    # bob_agent_controller.register_listeners([], defaults=True)
-    # alice_agent_controller.register_listeners([], defaults=True)
+    # seller_agent_controller.register_listeners([], defaults=True)
+    # manufacturer_agent_controller.register_listeners([], defaults=True)
 
-    invite = await bob_agent_controller.connections.create_invitation()
-    print("Invite from BOB", invite)
+    invite = await seller_agent_controller.connections.create_invitation()
+    print("Invite from SELLER", invite)
 
-    bob_connection_id = invite["connection_id"]
-    print("Bob's connection ID for Alice", bob_connection_id)
+    seller_connection_id = invite["connection_id"]
+    print("Bob's connection ID for Alice", seller_connection_id)
 
-    response = await alice_agent_controller.connections.accept_connection(invite["invitation"])
+    response = await manufacturer_agent_controller.connections.accept_connection(invite["invitation"])
 
 
     print("Alice's Connection ID for Bob", response["connection_id"])
-    alice_id = response["connection_id"]
+    manufacturer_id = response["connection_id"]
     print("Invite Accepted")
     print("Alice's state for Bob's connection :", response["state"])
 
 
     time.sleep(10)
 
-    # connection = await bob_agent_controller.connections.get_connection(bob_connection_id)
+    # connection = await seller_agent_controller.connections.get_connection(seller_connection_id)
     # while connection["state"] != "request":
     #     time.sleep(1)
-    #     connection = await bob_agent_controller.connections.get_connection(bob_connection_id)
+    #     connection = await seller_agent_controller.connections.get_connection(seller_connection_id)
 
-    connection = await bob_agent_controller.connections.get_connection(bob_connection_id)
+    connection = await seller_agent_controller.connections.get_connection(seller_connection_id)
     print("Bob's Connection State for Alice :", connection["state"])
 
-    all_conns = await bob_agent_controller.connections.get_connections()
+    all_conns = await seller_agent_controller.connections.get_connections()
     print("All Conns : ", all_conns)
 
 
-    connection = await bob_agent_controller.connections.accept_request(bob_connection_id)
+    connection = await seller_agent_controller.connections.accept_request(seller_connection_id)
     print("Request Accepted")
     print(connection)
 
-    print("BOB AGENT CONNECTION")
+    print("SELLER AGENT CONNECTION")
     print(connection)
 
     while connection["state"] != "active":
-        trust_ping = await bob_agent_controller.messaging.trust_ping(bob_connection_id, "hello")
-        print("TUST PING TO ACTIVATE CONNECTION - BOB -> RESEARCH")
+        trust_ping = await seller_agent_controller.messaging.trust_ping(seller_connection_id, "hello")
+        print("TUST PING TO ACTIVATE CONNECTION - SELLER -> RESEARCH")
         print(trust_ping)
         time.sleep(5)
-        connection = await bob_agent_controller.connections.get_connection(bob_connection_id)
+        connection = await seller_agent_controller.connections.get_connection(seller_connection_id)
 
-    trust_ping = await alice_agent_controller.messaging.trust_ping(alice_id,"hello")
-    print("TUST PING TO ACTIVATE CONNECTION - RESEARCH -> BOB")
+    trust_ping = await manufacturer_agent_controller.messaging.trust_ping(manufacturer_id,"hello")
+    print("TUST PING TO ACTIVATE CONNECTION - RESEARCH -> SELLER")
     print(trust_ping)
 
-    print("ALICE ID {} BOB ID {}".format(alice_id, bob_connection_id))
+    print("MANUFACTURER ID {} SELLER ID {}".format(manufacturer_id, seller_connection_id))
 
-    connection = await bob_agent_controller.connections.get_connection(bob_connection_id)
-    print("BOB AGENT CONNECTION")
+    connection = await seller_agent_controller.connections.get_connection(seller_connection_id)
+    print("SELLER AGENT CONNECTION")
     print(connection)
 
-    connection = await alice_agent_controller.connections.get_connection(alice_id)
+    connection = await manufacturer_agent_controller.connections.get_connection(manufacturer_id)
     print("RESEARCH AGENT CONNECTION")
     print(connection)
 
     print("SUCCESS")
     time.sleep(2)
-    await bob_agent_controller.terminate()
-    await alice_agent_controller.terminate()
+    await seller_agent_controller.terminate()
+    await manufacturer_agent_controller.terminate()
 
+
+    time.sleep(10)
+
+    # Inviter
+    the_wallet_agent_controller = AriesAgentController(admin_url=THE_WALLET_ADMIN_URL)
+
+    # Invitee
+    hospital_agent_controller = AriesAgentController(admin_url=HOSPITAL_ADMIN_URL)
+
+    # manufacturer_agent_controller.init_webhook_server(
+    #                                         webhook_host=MANUFACTURER_WEBHOOK_HOST,
+    #                                         webhook_port=MANUFACTURER_WEBHOOK_PORT,
+    #                                         webhook_base=MANUFACTURER_WEBHOOK_BASE)
+
+    # await manufacturer_agent_controller.listen_webhooks()
+    #
+    # await seller_agent_controller.listen_webhooks()
+    #
+    #
+    # seller_agent_controller.register_listeners([], defaults=True)
+    # manufacturer_agent_controller.register_listeners([], defaults=True)
+
+    invite = await the_wallet_agent_controller.connections.create_invitation()
+    print("Invite from SELLER", invite)
+
+    the_wallet_connection_id = invite["connection_id"]
+    print("Bob's connection ID for Alice", the_wallet_connection_id)
+
+    response = await hospital_agent_controller.connections.accept_connection(invite["invitation"])
+
+
+    print("Alice's Connection ID for Bob", response["connection_id"])
+    hospital_id = response["connection_id"]
+    print("Invite Accepted")
+    print("Alice's state for Bob's connection :", response["state"])
+
+
+    # 
+    time.sleep(10)
+
+    # connection = await seller_agent_controller.connections.get_connection(seller_connection_id)
+    # while connection["state"] != "request":
+    #     time.sleep(1)
+    #     connection = await seller_agent_controller.connections.get_connection(seller_connection_id)
+
+    connection = await the_wallet_agent_controller.connections.get_connection(the_wallet_connection_id)
+    print("Bob's Connection State for Alice :", connection["state"])
+
+    all_conns = await the_wallet_agent_controller.connections.get_connections()
+    print("All Conns : ", all_conns)
+
+
+    connection = await the_wallet_agent_controller.connections.accept_request(the_wallet_connection_id)
+    print("Request Accepted")
+    print(connection)
+
+    print("SELLER AGENT CONNECTION")
+    print(connection)
+
+    while connection["state"] != "active":
+        trust_ping = await the_wallet_agent_controller.messaging.trust_ping(the_wallet_connection_id, "hello")
+        print("TUST PING TO ACTIVATE CONNECTION - SELLER -> RESEARCH")
+        print(trust_ping)
+        time.sleep(5)
+        connection = await the_wallet_agent_controller.connections.get_connection(the_wallet_connection_id)
+
+    trust_ping = await hospital_agent_controller.messaging.trust_ping(hospital_id,"hello")
+    print("TUST PING TO ACTIVATE CONNECTION - RESEARCH -> SELLER")
+    print(trust_ping)
+
+    print("MANUFACTURER ID {} SELLER ID {}".format(hospital_id, the_wallet_connection_id))
+
+    connection = await the_wallet_agent_controller.connections.get_connection(the_wallet_connection_id)
+    print("SELLER AGENT CONNECTION")
+    print(connection)
+
+    connection = await hospital_agent_controller.connections.get_connection(hospital_id)
+    print("RESEARCH AGENT CONNECTION")
+    print(connection)
+
+    print("SUCCESS")
+    time.sleep(2)
+    await the_wallet_agent_controller.terminate()
+    await hospital_agent_controller.terminate()
 
 if __name__ == "__main__":
     # time.sleep(60)

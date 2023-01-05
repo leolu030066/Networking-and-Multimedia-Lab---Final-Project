@@ -42,7 +42,6 @@ services:
       context: ../
       dockerfile: dockerfiles/agents/Dockerfile
     environment:
-      - NGROK_NAME=ngrok-manufacturer
       - ADMIN_URL=http://manufacturer-agent:${MANUFACTURER_ADMIN_PORT}
       - AGENT_NAME=${MANUFACTURER_AGENT_NAME}
       - ADMIN_PORT=${MANUFACTURER_ADMIN_PORT}
@@ -79,7 +78,6 @@ services:
       context: ../
       dockerfile: dockerfiles/agents/Dockerfile
     environment:
-      - NGROK_NAME=ngrok-seller
       - ADMIN_URL=http://seller-agent:${SELLER_ADMIN_PORT}
       - AGENT_NAME=${SELLER_AGENT_NAME}
       - ADMIN_PORT=${SELLER_ADMIN_PORT}
@@ -116,7 +114,6 @@ services:
       context: ../
       dockerfile: dockerfiles/agents/Dockerfile
     environment:
-      - NGROK_NAME=ngrok-medical_device_computer
       - ADMIN_URL=http://medical_device_computer-agent:${MEDICAL_DEVICE_COMPUTER_ADMIN_PORT}
       - AGENT_NAME=${MEDICAL_DEVICE_COMPUTER_AGENT_NAME}
       - ADMIN_PORT=${MEDICAL_DEVICE_COMPUTER_ADMIN_PORT}
@@ -148,6 +145,42 @@ services:
         sleep 20; \
         aca-py start --arg-file /tmp/agent_conf.yml",
       ]
+  the_wallet-agent:
+    build:
+      context: ../
+      dockerfile: dockerfiles/agents/Dockerfile
+    environment:
+      - ADMIN_URL=http://the_wallet-agent:${THE_WALLET_ADMIN_PORT}
+      - AGENT_NAME=${THE_WALLET_AGENT_NAME}
+      - ADMIN_PORT=${THE_WALLET_ADMIN_PORT}
+      - HTTP_PORT=${THE_WALLET_HTTP_PORT}
+      - ACAPY_WEBHOOK_URL=${THE_WALLET_WEBHOOK_URL}
+      - AGENT_ENDPOINT=${THE_WALLET_AGENT_ENDPOINT}
+      - WALLET_SEED=${THE_WALLET_WALLET_SEED}
+      - WALLET_NAME=${THE_WALLET_WALLET_NAME}
+      - WALLET_KEY=${THE_WALLET_WALLET_KEY}
+      - WALLET_TYPE=${WALLET_TYPE}
+      - ACAPY_ADMIN_INSECURE_MODE=${THE_WALLET_ADMIN_SECURE}
+      - ACAPY_TAILS_SERVER_BASE_URL=http://tails-server:6543
+      - GENESIS_URL=${GENESIS_URL}
+    ports:
+      - ${THE_WALLET_HTTP_PORT}:${THE_WALLET_HTTP_PORT}
+      - ${THE_WALLET_ADMIN_PORT}:${THE_WALLET_ADMIN_PORT}
+    depends_on:
+      - ledger-nodes
+      - tails-server
+    networks:
+      - medical_device_blockchain
+    entrypoint: /bin/bash
+    command: [
+        "-c",
+        "echo Waiting for ledger to be ready...;
+        sleep 60;
+        curl -d '{\"seed\":\"${THE_WALLET_WALLET_SEED}\", \"role\":\"TRUST_ANCHOR\", \"alias\":\"${THE_WALLET_AGENT_NAME}\"}' -X POST ${LEDGER_URL}/register; \
+        python3 scripts/parse_yml_env_variables.py -c ./configuration/aries-args-basic.yaml; \
+        sleep 20; \
+        aca-py start --arg-file /tmp/agent_conf.yml",
+      ]
   setup:
     build:
       context: ../
@@ -159,6 +192,7 @@ services:
       - manufacturer-agent
       - seller-agent
       - medical_device_computer-agent
+      - the_wallet-agent
 #    ports:
 #      - ${ALICE_WEBHOOK_PORT}:${ALICE_WEBHOOK_PORT}
 #      - ${BOB_WEBHOOK_PORT}:${BOB_WEBHOOK_PORT}
@@ -175,6 +209,9 @@ services:
       - MEDICAL_DEVICE_COMPUTER_ADMIN_URL=http://medical_device_computer-agent:${MEDICAL_DEVICE_COMPUTER_ADMIN_PORT}
       - MEDICAL_DEVICE_COMPUTER_WEBHOOK_PORT=${MEDICAL_DEVICE_COMPUTER_WEBHOOK_PORT}
       - MEDICAL_DEVICE_COMPUTER_WEBHOOK_HOST=0.0.0.0
+      - THE_WALLET_ADMIN_URL=http://the_wallet-agent:${THE_WALLET_ADMIN_PORT}
+      - THE_WALLET_WEBHOOK_PORT=${THE_WALLET_WEBHOOK_PORT}
+      - THE_WALLET_WEBHOOK_HOST=0.0.0.0
     entrypoint: /bin/bash
     command:
       [
@@ -242,6 +279,21 @@ services:
     ports:
       - "8891:8888"
       - ${MEDICAL_DEVICE_COMPUTER_WEBHOOK_PORT}:${MEDICAL_DEVICE_COMPUTER_WEBHOOK_PORT}
+  the_wallet-notebook: 
+    build:
+      context: ../
+      dockerfile: dockerfiles/controllers/Dockerfile.basiccontroller
+      args:
+        - jupyter_port=${THE_WALLET_JUPYTER_PORT}
+    depends_on:
+      - the_wallet-agent
+    networks:
+      - medical_device_blockchain
+    volumes:
+      - ${PWD}/notebooks/the_wallet:/workspace
+    ports:
+      - "8892:8888"
+      - ${THE_WALLET_WEBHOOK_PORT}:${THE_WALLET_WEBHOOK_PORT}
   ledger-browser:
     build:
       context: https://github.com/bcgov/von-network.git#main
@@ -260,7 +312,6 @@ services:
       - webserver-ledger:/home/indy/ledger
     networks:
       - medical_device_blockchain
-
   ledger-nodes:
     build:
       context: https://github.com/bcgov/von-network.git#main
