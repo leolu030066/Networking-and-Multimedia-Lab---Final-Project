@@ -63,7 +63,7 @@ EOF
 # Default Settings:
 # -----------------------------------------------------------------------------------------------------------------
 # TBD
-DEFAULT_CONTAINERS="tails-server ngrok-hospital hospital-agent ngrok-manufacturer manufacturer-agent ngrok-seller seller-agent ngrok-medical_device_computer medical_device_computer-agent hospital-notebook manufacturer-notebook seller-notebook medical_device_computer-notebook setup ledger-nodes ledger-browser"
+DEFAULT_CONTAINERS="tails-server hospital-agent manufacturer-agent seller-agent medical_device_computer-agent hospital-notebook manufacturer-notebook seller-notebook medical_device_computer-notebook setup ledger-nodes ledger-browser"
 
 # -----------------------------------------------------------------------------------------------------------------
 # Functions:
@@ -123,7 +123,6 @@ configureEnvironment() {
   # hospital-agent
   export HOSPITAL_AGENT_NAME="HOSPITAL"
   export HOSPITAL_ADMIN_PORT=8071
-  export HOSPITAL_API_KEY="hospital_api_123456789"
   export HOSPITAL_HTTP_PORT=8070
   export HOSPITAL_WEBHOOK_PORT=8072
   export HOSPITAL_WEBHOOK_URL=${HOSPITAL_WEBHOOK_URL:-http://$DOCKERHOST:$HOSPITAL_WEBHOOK_PORT}
@@ -137,7 +136,6 @@ configureEnvironment() {
   # manufacturer-agent
   export MANUFACTURER_AGENT_NAME="MANUFACTURER"
   export MANUFACTURER_ADMIN_PORT=8051
-  export MANUFACTURER_API_KEY="manufacturer_api_123456789"
   export MANUFACTURER_HTTP_PORT=8050
   export MANUFACTURER_WEBHOOK_PORT=8052
   export MANUFACTURER_WEBHOOK_URL=${MANUFACTURER_WEBHOOK_URL:-http://$DOCKERHOST:$MANUFACTURER_WEBHOOK_PORT}

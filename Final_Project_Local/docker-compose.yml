@@ -1,16 +1,10 @@
 version: "3"
 services:
-  ngrok-hospital:
-    image: wernight/ngrok
-    command: ngrok http hospital-agent:${HOSPITAL_HTTP_PORT} --log stdout
-    networks:
-      - medical_device_blockchain
   hospital-agent:
     build:
       context: ../
-      dockerfile: dockerfiles/agents/Dockerfile.ngrok
+      dockerfile: dockerfiles/agents/Dockerfile
     environment:
-      - NGROK_NAME=ngrok-hospital
       - ADMIN_URL=http://hospital-agent:${HOSPITAL_ADMIN_PORT}
       - AGENT_NAME=${HOSPITAL_AGENT_NAME}
       - ADMIN_PORT=${HOSPITAL_ADMIN_PORT}
@@ -20,7 +14,6 @@ services:
       - WALLET_SEED=${HOSPITAL_WALLET_SEED}
       - WALLET_NAME=${HOSPITAL_WALLET_NAME}
       - WALLET_KEY=${HOSPITAL_WALLET_KEY}
-      - ACAPY_ADMIN_API_KEY=${HOSPITAL_API_KEY}
       - WALLET_TYPE=${WALLET_TYPE}
       - ACAPY_TAILS_SERVER_BASE_URL=http://tails-server:6543
       - ACAPY_ADMIN_INSECURE_MODE=${HOSPITAL_ADMIN_SECURE}
@@ -44,15 +37,10 @@ services:
         aca-py start --arg-file /tmp/agent_conf.yml",
       ]
 
-  ngrok-manufacturer:
-    image: wernight/ngrok
-    command: ngrok http manufacturer-agent:${MANUFACTURER_HTTP_PORT} --log stdout
-    networks:
-      - medical_device_blockchain
   manufacturer-agent:
     build:
       context: ../
-      dockerfile: dockerfiles/agents/Dockerfile.ngrok
+      dockerfile: dockerfiles/agents/Dockerfile
     environment:
       - NGROK_NAME=ngrok-manufacturer
       - ADMIN_URL=http://manufacturer-agent:${MANUFACTURER_ADMIN_PORT}
@@ -65,7 +53,6 @@ services:
       - WALLET_NAME=${MANUFACTURER_WALLET_NAME}
       - WALLET_KEY=${MANUFACTURER_WALLET_KEY}
       - WALLET_TYPE=${WALLET_TYPE}
-      - ACAPY_ADMIN_API_KEY=${MANUFACTURER_API_KEY}
       - ACAPY_ADMIN_INSECURE_MODE=${MANUFACTURER_ADMIN_SECURE}
       - ACAPY_TAILS_SERVER_BASE_URL=http://tails-server:6543
       - GENESIS_URL=${GENESIS_URL}
@@ -87,15 +74,10 @@ services:
         sleep 20; \
         aca-py start --arg-file /tmp/agent_conf.yml",
       ]
-  ngrok-seller:
-    image: wernight/ngrok
-    command: ngrok http seller-agent:${SELLER_HTTP_PORT} --log stdout
-    networks:
-      - medical_device_blockchain
   seller-agent:
     build:
       context: ../
-      dockerfile: dockerfiles/agents/Dockerfile.ngrok
+      dockerfile: dockerfiles/agents/Dockerfile
     environment:
       - NGROK_NAME=ngrok-seller
       - ADMIN_URL=http://seller-agent:${SELLER_ADMIN_PORT}
@@ -129,15 +111,10 @@ services:
         sleep 20; \
         aca-py start --arg-file /tmp/agent_conf.yml",
       ]
-  ngrok-medical_device_computer:
-    image: wernight/ngrok
-    command: ngrok http medical_device_computer-agent:${MEDICAL_DEVICE_COMPUTER_HTTP_PORT} --log stdout
-    networks:
-      - medical_device_blockchain
   medical_device_computer-agent:
     build:
       context: ../
-      dockerfile: dockerfiles/agents/Dockerfile.ngrok
+      dockerfile: dockerfiles/agents/Dockerfile
     environment:
       - NGROK_NAME=ngrok-medical_device_computer
       - ADMIN_URL=http://medical_device_computer-agent:${MEDICAL_DEVICE_COMPUTER_ADMIN_PORT}
@@ -188,11 +165,9 @@ services:
     environment:
       - HOSPITAL_ADMIN_URL=http://hospital-agent:${HOSPITAL_ADMIN_PORT}
       - HOSPITAL_WEBHOOK_PORT=${HOSPITAL_WEBHOOK_PORT}
-      - HOSPITAL_API_KEY=${HOSPITAL_API_KEY}
       - HOSPITAL_WEBHOOK_HOST=0.0.0.0
       - MANUFACTURER_ADMIN_URL=http://manufacturer-agent:${MANUFACTURER_ADMIN_PORT}
       - MANUFACTURER_WEBHOOK_PORT=${MANUFACTURER_WEBHOOK_PORT}
-      - MANUFACTURER_API_KEY=${MANUFACTURER_API_KEY}
       - MANUFACTURER_WEBHOOK_HOST=0.0.0.0
       - SELLER_ADMIN_URL=http://seller-agent:${SELLER_ADMIN_PORT}
       - SELLER_WEBHOOK_PORT=${SELLER_WEBHOOK_PORT}
@@ -213,7 +188,6 @@ services:
       dockerfile: dockerfiles/controllers/Dockerfile.basiccontroller
       args:
         - jupyter_port=${HOSPITAL_JUPYTER_PORT}
-        - HOSPITAL_API_KEY=${HOSPITAL_API_KEY}
     depends_on:
       - hospital-agent
     networks:
@@ -229,7 +203,6 @@ services:
       dockerfile: dockerfiles/controllers/Dockerfile.basiccontroller
       args:
         - jupyter_port=${MANUFACTURER_JUPYTER_PORT}
-        - HOSPITAL_API_KEY=${HOSPITAL_API_KEY}
     depends_on:
       - manufacturer-agent
     networks:
