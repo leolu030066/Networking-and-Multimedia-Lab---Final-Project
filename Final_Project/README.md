@@ -2,10 +2,15 @@
 
 This is the final project of Networking and Multimedia Lab. 
 
-Todo: Ensure the docker-compose.yml is suitable.
-Todo2: Modify the temporary notebook code.
-
 ## Requirement
+
+Same as Pydentity
+
+1. docker
+2. docker-compose
+3. source-to-image(s2i)
+
+pip package installed in docker container, not need to install in local.
 
 ## How to build
 ```
